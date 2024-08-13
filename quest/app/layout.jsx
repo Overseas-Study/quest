@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
           <div className="w-full flex-none md:w-20">
             <SideNav />
           </div>
-          <div className="w-full">
+          <div className="w-full bg-custom-secondary">
             <div className="flex-grow p-2 h-screen bg-custom-white md:overflow-y-auto md:p-4">
               {children}
             </div>

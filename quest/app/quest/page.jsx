@@ -1,5 +1,5 @@
 import Header from "@/components/Header";
-import QuestTypeSelection from "@/components/QuestTypeSelection";
+import QuestTypeSelection from "@/components/quests/QuestTypeSelection";
 
 export default function Quest() {
   return (
