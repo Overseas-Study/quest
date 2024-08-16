@@ -8,7 +8,7 @@ pub struct InformationQuest;
 
 impl Metadata for InformationQuest {
     type Init = In<QuestInit>;
-    type Handle = InOut<QuestAction, QuestEvent>;
+    type Handle = InOut<QuestAction, Result<QuestEvent, QuestError>>;
     type State = Out<QuestState>;
     type Reply = ();
     type Others = ();
@@ -82,6 +82,12 @@ pub enum QuestEvent {
 	Retracted(ActorId),
 }
 
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+pub enum QuestError {
+	QuestIsClosed,
+	QuestAlreadyRetracted,
+}
+
 // This serves as a state machine to ensure correct quest state transitions.
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
 pub enum QuestStatus {
@@ -89,6 +95,20 @@ pub enum QuestStatus {
     Published,
     Completed,
     Retracted,
+}
+
+impl QuestStatus {
+	pub fn is_published(&self) -> bool {
+		matches!(self, QuestStatus::Published)
+	}
+
+	pub fn is_completed(&self) -> bool {
+		matches!(self, QuestStatus::Completed)
+	}
+
+	pub fn is_retracted(&self) -> bool {
+		matches!(self, QuestStatus::Retracted)
+	}
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
