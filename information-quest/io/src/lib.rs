@@ -18,8 +18,6 @@ impl Metadata for InformationQuest {
 // Internal quest state.
 // TODO: should create some functions on types to make some fields private.
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct QuestState {
     // Publisher info.
 	pub publisher: ActorId,
@@ -57,8 +55,6 @@ impl QuestState {
 
 // Get configurable values from the user.
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct QuestInit {
     pub title: String,
 	pub description: String,
@@ -67,8 +63,6 @@ pub struct QuestInit {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum QuestAction {
 	Submit(Submission),
 	Decide(ActorId, Decision),
@@ -76,8 +70,6 @@ pub enum QuestAction {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum QuestEvent {
     Published(ActorId),
 	// Which user submitted to which quest.
@@ -92,8 +84,6 @@ pub enum QuestEvent {
 
 // This serves as a state machine to ensure correct quest state transitions.
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum QuestStatus {
     #[default]
     Published,
@@ -102,8 +92,6 @@ pub enum QuestStatus {
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Decision {
 	#[default]
 	Pending,
@@ -112,14 +100,10 @@ pub enum Decision {
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct TokenId(String);
 
 // Represent submission from the quest participants.
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Submission {
 	pub content: String,
 	pub status: Decision,
