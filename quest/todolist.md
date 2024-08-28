@@ -1,4 +1,8 @@
 ### Todos
-- Add web3 wallet component.
-- Publish information quest to the Vara network.
-- Read states back from the contract and display.
+- main marketing component ✅
+- sub-page component ✅
+- landing page ✅
+- example info quest component ✅
+- info quest cta component ✅
+- info quest form ✅
+- info quest page ✅
