@@ -1,5 +1,6 @@
 import { Sails } from "sails-js";
 import { GearApi } from "@gear-js/api";
+import { Program } from "./infoQuest";
 
 const idl = `
 type UserInput = struct {
@@ -56,11 +57,6 @@ service InfoQuestSvc {
 const INFO_QUEST_ID =
   "0xc3235a6ec2e26f5875c95d2a85eb34dc9506638c305adeb980daca04ba8b2da3";
 
-export const init_sails = async (gearApi, programId) => {
-  const sails = await Sails.new();
-  sails.parseIdl(idl);
-  sails.setApi(gearApi);
-  sails.setProgramId(programId);
-
-  return sails;
+export const init_info_quest = async (gearApi, programId) => {
+  return new Program(gearApi, programId);
 };

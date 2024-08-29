@@ -2,8 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { GearApi } from "@gear-js/api";
-import { web3Enable, web3Accounts } from "@polkadot/extension-dapp";
+import {
+  web3Enable,
+  web3Accounts,
+  web3FromSource,
+} from "@polkadot/extension-dapp";
 import DropDownSelection from "@/components/info-quest/DropDownSelection";
+import { Program } from "@/lib/infoQuest";
 
 const accountOptions = [
   {
@@ -27,6 +32,9 @@ const submissionOptions = [
     description: "Quest participants need to submit a link to their work.",
   },
 ];
+
+const INFO_QUEST_ID =
+  "0xc3235a6ec2e26f5875c95d2a85eb34dc9506638c305adeb980daca04ba8b2da3";
 
 const Web3Form = () => {
   const [gearApi, setGearApi] = useState(null);
@@ -88,22 +96,35 @@ const Web3Form = () => {
     setSelectedAccount(account);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
     const data = new FormData(e.target);
-
+    
     const submissionData = {
-      loginMethod: formData.loginMethod,
+      login_method: formData.loginMethod,
       deadline: data.get("deadline"),
-      questTitle: data.get("quest-title"),
-      questDescription: data.get("quest-description"),
-      submissionRequirements: data.get("submission-requirements"),
-      submissionFormat: formData.submissionFormat,
-      reward: data.get("reward"),
+      title: data.get("quest-title"),
+      description: data.get("quest-description"),
+      submission_requirements: data.get("submission-requirements"),
+      submission_type: formData.submissionFormat,
+      reward_amount: data.get("reward"),
     };
-
     console.log(submissionData);
+    setFormData(submissionData);
+    
+    const infoQuest = new Program(gearApi, INFO_QUEST_ID);
+    const transaction = infoQuest.infoQuestSvc.publish({...submissionData});
+    const injector = await web3FromSource(selectedAccount.meta.source);
+    transaction.withAccount(selectedAccount.address, {
+      signer: injector.signer,
+    });
+
+    await transaction.calculateGas();
+    const { msgId, blockHash, response } = await transaction.signAndSend();
+
+    const result = await response();
+    console.log(result);
   };
 
   return (
