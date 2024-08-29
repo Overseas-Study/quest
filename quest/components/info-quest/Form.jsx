@@ -33,7 +33,7 @@ const Form = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="border border-custom-primary shadow-sm ring-1 ring-gray-900/5 w-1/3 sm:rounded-xl md:col-span-2"
+      className="border border-custom-primary shadow-sm ring-1 ring-gray-900/5 w-1/2 sm:rounded-xl md:col-span-2"
     >
       <div className="px-4 py-6 sm:p-8">
         <div className="grid max-w-2xl grid-cols-2 gap-x-6 gap-y-8">

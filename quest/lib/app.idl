@@ -1,0 +1,50 @@
+type UserInput = struct {
+  login_method: str,
+  deadline: str,
+  title: str,
+  description: str,
+  submission_requirements: str,
+  submission_type: str,
+  reward_amount: str,
+};
+
+type InformationQuest = struct {
+  login_method: str,
+  deadline: str,
+  title: str,
+  description: str,
+  submission_requirements: str,
+  submission_type: str,
+  reward_amount: str,
+  submissions: Submissions,
+};
+
+type Submissions = struct {
+  map: map (actor_id, str),
+  status: map (actor_id, SubmissionStatus),
+};
+
+type SubmissionStatus = enum {
+  Submitted,
+  Rejected,
+  Approved,
+};
+
+constructor {
+  New : ();
+};
+
+service InfoQuestSvc {
+  Publish : (quest_details: UserInput) -> null;
+  query GetState : (user: actor_id) -> opt InformationQuest;
+
+  events {
+    Published: struct { actor_id, map (actor_id, InformationQuest) };
+    SubmissionNotFound;
+    QuestIsClosed;
+    AlreadyDecided;
+    QuestCompleted;
+    SubmissionRejected;
+  }
+};
+

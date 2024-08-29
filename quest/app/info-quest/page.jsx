@@ -1,6 +1,6 @@
 import CallToAction from "@/components/info-quest/CallToAction";
 import ExampleQuest from "@/components/info-quest/ExampleQuest";
-import Form from "@/components/info-quest/Form";
+import Web3Form from "@/components/Web3Form";
 import {
   AcademicCapIcon,
   BuildingStorefrontIcon,
@@ -40,7 +40,7 @@ export default function Page() {
         </div>
       </div>
       {/* The information quest form */}
-      <Form />
+      <Web3Form />
     </div>
   );
 }

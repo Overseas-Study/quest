@@ -10,12 +10,19 @@ import {
 } from "@headlessui/react";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 
-const DropDownSelection = ({ selectionOptions }) => {
+const DropDownSelection = ({ selectionOptions, onChange }) => {
   // Default selected the first item in the options.
   const [selected, setSelected] = useState(selectionOptions[0]);
+  const handleChange = (value) => {
+    setSelected(value);
+    if (onChange) {
+      // The value is the selectionOption object passed down by the parent component.
+      onChange(value.title);
+    }
+  }
 
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox value={selected} onChange={handleChange}>
       <Label className="sr-only">Change published status</Label>
       <div className="relative">
         <div className="inline-flex divide-x divide-indigo-700 rounded-md shadow-sm">
