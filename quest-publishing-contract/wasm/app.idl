@@ -1,22 +1,50 @@
+type Title = struct {
+  str,
+};
+
+type SubmissionStatus = enum {
+  Submitted,
+  Approved,
+  Rejected,
+  NoDecision,
+};
+
 type UserInput = struct {
-  login_method: str,
+  login_method: LoginMethod,
   deadline: str,
-  title: str,
-  description: str,
-  submission_requirements: str,
-  submission_type: str,
-  reward_amount: str,
+  title: Title,
+  description: Description,
+  submission_requirements: Description,
+  submission_type: SubmissionType,
+  reward_amount: u128,
+};
+
+type LoginMethod = enum {
+  Web3,
+  Email,
+  Username,
+};
+
+type Description = struct {
+  str,
+};
+
+type SubmissionType = enum {
+  Text,
+  Link,
 };
 
 type InformationQuest = struct {
-  login_method: str,
+  login_method: LoginMethod,
+  publisher_id: actor_id,
   deadline: str,
-  title: str,
-  description: str,
-  submission_requirements: str,
-  submission_type: str,
-  reward_amount: str,
+  title: Title,
+  description: Description,
+  submission_requirements: Description,
+  submission_type: SubmissionType,
+  reward_amount: u128,
   submissions: Submissions,
+  quest_status: QuestStatus,
 };
 
 type Submissions = struct {
@@ -24,10 +52,10 @@ type Submissions = struct {
   status: map (actor_id, SubmissionStatus),
 };
 
-type SubmissionStatus = enum {
-  Submitted,
-  Rejected,
-  Approved,
+type QuestStatus = enum {
+  Open,
+  Completed,
+  Closed,
 };
 
 constructor {
@@ -35,16 +63,25 @@ constructor {
 };
 
 service InfoQuestSvc {
+  Close : (title: Title) -> null;
+  Decide : (participant: actor_id, decision: SubmissionStatus, title: Title) -> null;
   Publish : (quest_details: UserInput) -> null;
-  query GetState : (user: actor_id) -> opt InformationQuest;
+  Submit : (participant: actor_id, submission: str, title: Title) -> null;
+  query GetAllQuests : () -> opt map (Title, InformationQuest);
+  query GetQuest : (title: Title) -> opt InformationQuest;
 
   events {
-    Published: struct { actor_id, map (actor_id, InformationQuest) };
+    Published;
+    Submitted;
+    DecisionMade;
+    Closed;
     SubmissionNotFound;
     QuestIsClosed;
+    QuestDoesNotExist;
     AlreadyDecided;
     QuestCompleted;
     SubmissionRejected;
+    AlreadySubmitted;
   }
 };
 
