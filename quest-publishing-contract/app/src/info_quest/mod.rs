@@ -1,11 +1,11 @@
 use cell::RefCell;
 use gstd::collections::BTreeMap;
-use gstd::msg;
+use gstd::{exec, msg};
 use sails_rs::prelude::*;
 
 pub struct InfoQuestData {
     // Who published which info quest.
-    pub info_quest_map: BTreeMap<Title, InformationQuest>,
+    pub info_quest_map: BTreeMap<String, InformationQuest>,
 }
 
 #[derive(Encode, Decode, TypeInfo, Default, Clone)]
@@ -14,10 +14,11 @@ pub struct InfoQuestData {
 pub struct InformationQuest {
     pub login_method: LoginMethod,
     pub publisher_id: ActorId,
-    pub deadline: String,
-    pub title: Title,
-    pub description: Description,
-    pub submission_requirements: Description,
+    // Deadline denoted in block height.
+    pub deadline: u32,
+    pub title: String,
+    pub description: String,
+    pub submission_requirements: String,
     pub submission_type: SubmissionType,
     pub reward_amount: u128,
     pub submissions: Submissions,
@@ -39,19 +40,23 @@ pub enum LoginMethod {
 #[scale_info(crate = sails_rs::scale_info)]
 pub struct Title(String);
 impl Title {
+    pub fn new(title: &str) -> Self {
+        Self(title.to_string())
+    }
+
     pub fn sanity_check(&self) -> bool {
-        self.character_check() && self.length_check() && self.uniqueness_check()
+        // Check length first to save gas cost.
+        self.length_check() && self.character_check()
     }
 
     pub fn character_check(&self) -> bool {
-        true
+        // Only characters, spaces, and numbers is allowed.
+        self.0.split_whitespace().collect::<String>().chars().all(|c| c.is_alphanumeric())
     }
 
     pub fn length_check(&self) -> bool {
-        true
-    }
-    pub fn uniqueness_check(&self) -> bool {
-        true
+        // Maximum 100 characters is allowed.
+        self.0.len() <= 100
     }
 }
 
@@ -60,12 +65,17 @@ impl Title {
 #[scale_info(crate = sails_rs::scale_info)]
 pub struct Description(String);
 impl Description {
+    pub fn new(content: &str) -> Self {
+        Self(content.to_string())
+    }
+
     pub fn sanity_check(&self) -> bool {
         self.length_check()
     }
 
     pub fn length_check(&self) -> bool {
-        true
+        // Maximum 280 characters excludeing spaces is allowed.
+        self.0.split_whitespace().collect::<String>().len() <= 280
     }
 }
 
@@ -96,10 +106,10 @@ pub enum SubmissionStatus {
 #[scale_info(crate = sails_rs::scale_info)]
 pub struct UserInput {
     pub login_method: LoginMethod,
-    pub deadline: String,
-    pub title: Title,
-    pub description: Description,
-    pub submission_requirements: Description,
+    pub deadline: u32,
+    pub title: String,
+    pub description: String,
+    pub submission_requirements: String,
     pub submission_type: SubmissionType,
     pub reward_amount: u128,
 }
@@ -194,6 +204,14 @@ pub enum QuestEvents {
     QuestCompleted,
     SubmissionRejected,
     AlreadySubmitted,
+    PermissionDenied,
+    // Required amount - Actual amount received
+    RequireCommitment(u128, u128),
+    DeadlinePassed,
+    TitleAlreadyExists,
+    IllegalTitle(String),
+    IllegalDescription(String),
+    IllegalRequirements(String),
 }
 
 #[derive(Encode, Decode, TypeInfo, Default, Clone, PartialEq, Eq)]
@@ -217,13 +235,43 @@ impl<'a> InfoQuestService<'a> {
     }
 
     pub fn publish(&mut self, quest_details: UserInput) {
+        // First do a bunch of sanity checks.
+        if self.is_title_exists(quest_details.title.clone()) {
+            self.notify_on(QuestEvents::TitleAlreadyExists).unwrap();
+            return;
+        }
+
+        if msg::value() < quest_details.reward_amount {
+            self.notify_on(QuestEvents::RequireCommitment(
+                quest_details.reward_amount,
+                msg::value(),
+            ))
+            .unwrap();
+            return;
+        }
+
+        if !Title::new(&quest_details.title).sanity_check() {
+            self.notify_on(QuestEvents::IllegalTitle(quest_details.title)).unwrap();
+            return;
+        }
+
+        if !Description::new(&quest_details.description).sanity_check() {
+            self.notify_on(QuestEvents::IllegalDescription(quest_details.description)).unwrap();
+            return;
+        }
+
+        if !Description::new(&quest_details.submission_requirements).sanity_check() {
+            self.notify_on(QuestEvents::IllegalRequirements(quest_details.submission_requirements)).unwrap();
+            return;
+        }
+
         let new_info_quest = InformationQuest {
             login_method: quest_details.login_method,
             publisher_id: msg::source(),
             deadline: quest_details.deadline,
             title: quest_details.title.clone(),
-            description: quest_details.description,
-            submission_requirements: quest_details.submission_requirements,
+            description: quest_details.description.clone(),
+            submission_requirements: quest_details.submission_requirements.clone(),
             submission_type: quest_details.submission_type,
             reward_amount: quest_details.reward_amount,
             submissions: Submissions {
@@ -240,7 +288,17 @@ impl<'a> InfoQuestService<'a> {
         self.notify_on(QuestEvents::Published).unwrap();
     }
 
-    pub fn submit(&mut self, participant: ActorId, submission: String, title: Title) {
+    pub fn submit(&mut self, submission: String, title: String) {
+        if self.is_owner(msg::source(), title.clone()) {
+            self.notify_on(QuestEvents::PermissionDenied).unwrap();
+            return;
+        }
+
+        if self.is_deadline_passed(title.clone()) {
+            self.notify_on(QuestEvents::DeadlinePassed).unwrap();
+            return;
+        }
+
         if self.is_open(title.clone()) == false {
             self.notify_on(QuestEvents::QuestIsClosed).unwrap();
             return;
@@ -248,7 +306,7 @@ impl<'a> InfoQuestService<'a> {
 
         let mut data = self.data.borrow_mut();
         if let Some(info_quest) = data.info_quest_map.get_mut(&title) {
-            if let Err(e) = info_quest.submissions.submit(participant, submission) {
+            if let Err(e) = info_quest.submissions.submit(msg::source(), submission) {
                 self.notify_on(e).unwrap();
             } else {
                 self.notify_on(QuestEvents::Submitted).unwrap();
@@ -258,7 +316,12 @@ impl<'a> InfoQuestService<'a> {
         }
     }
 
-    pub fn decide(&mut self, participant: ActorId, decision: SubmissionStatus, title: Title) {
+    pub fn decide(&mut self, participant: ActorId, decision: SubmissionStatus, title: String) {
+        if self.is_owner(msg::source(), title.clone()) == false {
+            self.notify_on(QuestEvents::PermissionDenied).unwrap();
+            return;
+        }
+
         if self.is_open(title.clone()) == false {
             self.notify_on(QuestEvents::QuestIsClosed).unwrap();
             return;
@@ -266,11 +329,20 @@ impl<'a> InfoQuestService<'a> {
 
         let mut data = self.data.borrow_mut();
         if let Some(info_quest) = data.info_quest_map.get_mut(&title) {
-            if let Err(e) = info_quest.submissions.decide(participant, decision.clone()) {
+            if let Err(e) = info_quest
+                .submissions
+                .decide(participant.clone(), decision.clone())
+            {
                 self.notify_on(e).unwrap();
             } else {
                 // When one submission is approved, the quest is marked as Finished.
                 if decision == SubmissionStatus::Approved {
+                    // TODO: why the decimal is not aligned?
+                    let _ = msg::send(
+                        participant.clone(),
+                        "",
+                        info_quest.reward_amount * 1000000000000,
+                    );
                     info_quest.quest_status = QuestStatus::Completed;
                     self.notify_on(QuestEvents::QuestCompleted).unwrap();
                 } else {
@@ -282,7 +354,12 @@ impl<'a> InfoQuestService<'a> {
         }
     }
 
-    pub fn close(&mut self, title: Title) {
+    pub fn close(&mut self, title: String) {
+        if self.is_owner(msg::source(), title.clone()) == false {
+            self.notify_on(QuestEvents::PermissionDenied).unwrap();
+            return;
+        }
+
         if self.is_open(title.clone()) == false {
             self.notify_on(QuestEvents::QuestIsClosed).unwrap();
             return;
@@ -302,19 +379,38 @@ impl<'a> InfoQuestService<'a> {
 
     // Queries
 
-    pub fn get_quest(&self, title: Title) -> Option<InformationQuest> {
+    pub fn get_quest(&self, title: String) -> Option<InformationQuest> {
         self.data.borrow().info_quest_map.get(&title).cloned()
     }
 
-    pub fn get_all_quests(&self) -> Option<BTreeMap<Title, InformationQuest>> {
+    pub fn get_all_quests(&self) -> Option<BTreeMap<String, InformationQuest>> {
         Some(self.data.borrow().info_quest_map.clone())
     }
 
     // Helper functions
-    fn is_open(&self, title: Title) -> bool {
+    fn is_open(&self, title: String) -> bool {
         if let Some(info_quest) = self.data.borrow().info_quest_map.get(&title) {
             return info_quest.quest_status == QuestStatus::Open;
         }
         false
+    }
+
+    fn is_owner(&self, actor: ActorId, title: String) -> bool {
+        if let Some(info_quest) = self.data.borrow().info_quest_map.get(&title) {
+            return info_quest.publisher_id == actor;
+        }
+        false
+    }
+
+    // TODO: change this to delayed message after figuring out how.
+    fn is_deadline_passed(&self, title: String) -> bool {
+        if let Some(info_quest) = self.data.borrow().info_quest_map.get(&title) {
+            return exec::block_height() > info_quest.deadline;
+        }
+        false
+    }
+
+    fn is_title_exists(&self, title: String) -> bool {
+        self.data.borrow().info_quest_map.contains_key(&title)
     }
 }

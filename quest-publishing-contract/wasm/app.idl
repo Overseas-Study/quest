@@ -1,7 +1,3 @@
-type Title = struct {
-  str,
-};
-
 type SubmissionStatus = enum {
   Submitted,
   Approved,
@@ -11,10 +7,10 @@ type SubmissionStatus = enum {
 
 type UserInput = struct {
   login_method: LoginMethod,
-  deadline: str,
-  title: Title,
-  description: Description,
-  submission_requirements: Description,
+  deadline: u32,
+  title: str,
+  description: str,
+  submission_requirements: str,
   submission_type: SubmissionType,
   reward_amount: u128,
 };
@@ -25,10 +21,6 @@ type LoginMethod = enum {
   Username,
 };
 
-type Description = struct {
-  str,
-};
-
 type SubmissionType = enum {
   Text,
   Link,
@@ -37,10 +29,10 @@ type SubmissionType = enum {
 type InformationQuest = struct {
   login_method: LoginMethod,
   publisher_id: actor_id,
-  deadline: str,
-  title: Title,
-  description: Description,
-  submission_requirements: Description,
+  deadline: u32,
+  title: str,
+  description: str,
+  submission_requirements: str,
   submission_type: SubmissionType,
   reward_amount: u128,
   submissions: Submissions,
@@ -63,12 +55,12 @@ constructor {
 };
 
 service InfoQuestSvc {
-  Close : (title: Title) -> null;
-  Decide : (participant: actor_id, decision: SubmissionStatus, title: Title) -> null;
+  Close : (title: str) -> null;
+  Decide : (participant: actor_id, decision: SubmissionStatus, title: str) -> null;
   Publish : (quest_details: UserInput) -> null;
-  Submit : (participant: actor_id, submission: str, title: Title) -> null;
-  query GetAllQuests : () -> opt map (Title, InformationQuest);
-  query GetQuest : (title: Title) -> opt InformationQuest;
+  Submit : (submission: str, title: str) -> null;
+  query GetAllQuests : () -> opt map (str, InformationQuest);
+  query GetQuest : (title: str) -> opt InformationQuest;
 
   events {
     Published;
@@ -82,6 +74,13 @@ service InfoQuestSvc {
     QuestCompleted;
     SubmissionRejected;
     AlreadySubmitted;
+    PermissionDenied;
+    RequireCommitment: struct { u128, u128 };
+    DeadlinePassed;
+    TitleAlreadyExists;
+    IllegalTitle: str;
+    IllegalDescription: str;
+    IllegalRequirements: str;
   }
 };
 
