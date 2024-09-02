@@ -18,6 +18,8 @@ const CompactQuestCard = ({ title, deadline, status, description, logo }) => {
       <div className="grid justify-items-center">
         <img
           className="col-span-1 rounded-lg"
+          width={139}
+          height={167}
           src={`/${logo}`}
           alt="quest"
         />
