@@ -1,4 +1,7 @@
 ### Todos
-- Wallet connection component ✅
-- Send form info to backend contract
-- Query info from contract and display at the frontend ✅
+- Navbar icon✅
+- Navbar navigation✅
+- Statistic display component✅
+- Compact quest card component✅
+- Full quest card component✅
+- Submission card component✅

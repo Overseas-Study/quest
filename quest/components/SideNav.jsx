@@ -1,13 +1,13 @@
 "use client";
 
-import { MapIcon, AcademicCapIcon } from "@heroicons/react/24/outline";
+import { HomeIcon, CursorArrowRaysIcon, SwatchIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import clsx from "clsx";
 
 const navigation = [
-  { name: "Home", href: "/", icon: MapIcon },
-  { name: "Quest", href: "/quest", icon: AcademicCapIcon },
-  { name: "Management", href: "/management", icon: AcademicCapIcon },
+  { name: "Home", href: "/", icon: HomeIcon },
+  { name: "Quest", href: "/info-quest", icon: CursorArrowRaysIcon },
+  { name: "Management", href: "/management", icon: SwatchIcon },
 ];
 
 export default function SideNav() {
