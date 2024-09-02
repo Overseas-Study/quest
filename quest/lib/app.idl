@@ -1,22 +1,42 @@
+type SubmissionStatus = enum {
+  Submitted,
+  Approved,
+  Rejected,
+  NoDecision,
+};
+
 type UserInput = struct {
-  login_method: str,
-  deadline: str,
+  login_method: LoginMethod,
+  deadline: u32,
   title: str,
   description: str,
   submission_requirements: str,
-  submission_type: str,
-  reward_amount: str,
+  submission_type: SubmissionType,
+  reward_amount: u128,
+};
+
+type LoginMethod = enum {
+  Web3,
+  Email,
+  Username,
+};
+
+type SubmissionType = enum {
+  Text,
+  Link,
 };
 
 type InformationQuest = struct {
-  login_method: str,
-  deadline: str,
+  login_method: LoginMethod,
+  publisher_id: actor_id,
+  deadline: u32,
   title: str,
   description: str,
   submission_requirements: str,
-  submission_type: str,
-  reward_amount: str,
+  submission_type: SubmissionType,
+  reward_amount: u128,
   submissions: Submissions,
+  quest_status: QuestStatus,
 };
 
 type Submissions = struct {
@@ -24,10 +44,10 @@ type Submissions = struct {
   status: map (actor_id, SubmissionStatus),
 };
 
-type SubmissionStatus = enum {
-  Submitted,
-  Rejected,
-  Approved,
+type QuestStatus = enum {
+  Open,
+  Completed,
+  Closed,
 };
 
 constructor {
@@ -35,16 +55,32 @@ constructor {
 };
 
 service InfoQuestSvc {
+  Close : (title: str) -> null;
+  Decide : (participant: actor_id, decision: SubmissionStatus, title: str) -> null;
   Publish : (quest_details: UserInput) -> null;
-  query GetState : (user: actor_id) -> opt InformationQuest;
+  Submit : (submission: str, title: str) -> null;
+  query GetAllQuests : () -> opt map (str, InformationQuest);
+  query GetQuest : (title: str) -> opt InformationQuest;
 
   events {
-    Published: struct { actor_id, map (actor_id, InformationQuest) };
+    Published;
+    Submitted;
+    DecisionMade;
+    Closed;
     SubmissionNotFound;
     QuestIsClosed;
+    QuestDoesNotExist;
     AlreadyDecided;
     QuestCompleted;
     SubmissionRejected;
+    AlreadySubmitted;
+    PermissionDenied;
+    RequireCommitment: struct { u128, u128 };
+    DeadlinePassed;
+    TitleAlreadyExists;
+    IllegalTitle: str;
+    IllegalDescription: str;
+    IllegalRequirements: str;
   }
 };
 

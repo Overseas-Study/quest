@@ -106,6 +106,7 @@ pub enum SubmissionStatus {
 #[scale_info(crate = sails_rs::scale_info)]
 pub struct UserInput {
     pub login_method: LoginMethod,
+    // This deadline means number of blocks from now.
     pub deadline: u32,
     pub title: String,
     pub description: String,
@@ -268,7 +269,7 @@ impl<'a> InfoQuestService<'a> {
         let new_info_quest = InformationQuest {
             login_method: quest_details.login_method,
             publisher_id: msg::source(),
-            deadline: quest_details.deadline,
+            deadline: quest_details.deadline + exec::block_height(),
             title: quest_details.title.clone(),
             description: quest_details.description.clone(),
             submission_requirements: quest_details.submission_requirements.clone(),

@@ -9,14 +9,15 @@ import {
 } from "@polkadot/extension-dapp";
 import DropDownSelection from "@/components/info-quest/DropDownSelection";
 import { Program } from "@/lib/infoQuest";
+import { useRouter } from "next/navigation";
 
 const accountOptions = [
   {
-    title: "Web3 Wallet",
+    title: "web3",
     description: "Control your own secrets with web3 wallet.",
   },
   {
-    title: "Email",
+    title: "email",
     description:
       "We will handle the web3 wallet management for you, but you can always change to web3 wallet login.",
   },
@@ -34,7 +35,7 @@ const submissionOptions = [
 ];
 
 const INFO_QUEST_ID =
-  "0xc3235a6ec2e26f5875c95d2a85eb34dc9506638c305adeb980daca04ba8b2da3";
+  "0xc28c32a6f0cc06befec060f74231b78b7e929ac72e082e1b2a9c91ab70b50306";
 
 const Web3Form = () => {
   const [gearApi, setGearApi] = useState(null);
@@ -44,13 +45,14 @@ const Web3Form = () => {
   const [loginMethod, setLoginMethod] = useState("");
   const [formData, setFormData] = useState({
     loginMethod: "",
-    deadline: "",
-    questTitle: "",
-    questDescription: "",
+    deadline: 0,
+    title: "",
+    description: "",
     submissionRequirements: "",
-    submissionFormat: "",
-    reward: "",
+    submissionType: "",
+    rewardAmount: 0,
   });
+  const router = useRouter();
 
   useEffect(() => {
     const connectToGearApi = async () => {
@@ -96,19 +98,27 @@ const Web3Form = () => {
     setSelectedAccount(account);
   };
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
     
     const data = new FormData(e.target);
+
+    // Change the deadline to block height.
+    const formDeadline = data.get("deadline");
+    const parsedDeadline = new Date(formDeadline);
+    const now = new Date();
+    const diffMilli = parsedDeadline - now;
+    const diffSeconds = Math.floor(diffMilli / 1000);
+    const deadlineBlock = Math.floor(diffSeconds / 3);
     
     const submissionData = {
       login_method: formData.loginMethod,
-      deadline: data.get("deadline"),
+      deadline: deadlineBlock,
       title: data.get("quest-title"),
       description: data.get("quest-description"),
       submission_requirements: data.get("submission-requirements"),
       submission_type: formData.submissionFormat,
-      reward_amount: data.get("reward"),
+      reward_amount: Number(data.get("reward")),
     };
     console.log(submissionData);
     setFormData(submissionData);
@@ -119,19 +129,20 @@ const Web3Form = () => {
     transaction.withAccount(selectedAccount.address, {
       signer: injector.signer,
     });
+    transaction.withValue(submissionData.reward_amount);
 
     await transaction.calculateGas();
     const { msgId, blockHash, response } = await transaction.signAndSend();
 
-    const result = await response();
-    console.log(result);
+    await response();
+    router.push("/management");
   };
 
   return (
     <div className="flex flex-col w-full">
       <div>
         <h2>Gear Wallet Connection</h2>
-        {!connected && loginMethod == "Web3 Wallet" ? (
+        {!connected && loginMethod == "web3" ? (
           <button onClick={connectWallet}>Connect Wallet</button>
         ) : (
           <div>

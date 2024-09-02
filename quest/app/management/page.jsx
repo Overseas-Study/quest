@@ -3,7 +3,9 @@
 import CompactQuestCard from "@/components/management/CompactQuestCard";
 import QuestDetails from "@/components/management/QuestDetails";
 import StatisticDisplay from "@/components/management/StatisticDisplay";
-import { useState } from "react";
+import { GearApi } from "@gear-js/api";
+import { useState, useEffect } from "react";
+import { Program } from "@/lib/infoQuest";
 
 const data = {
   status: "Open",
@@ -45,12 +47,42 @@ const questInfo = [
   },
 ];
 
+const INFO_QUEST_ID =
+  "0xc28c32a6f0cc06befec060f74231b78b7e929ac72e082e1b2a9c91ab70b50306";
+
 export default function Management() {
   const [selectedQuest, setSelectedQuest] = useState(null);
+  const [gearApi, setGearApi] = useState(null);
+
+  useEffect(() => {
+    const connectToGearApi = async () => {
+      try {
+        // Initialize the Gear API
+        const api = await GearApi.create({
+          providerAddress: "wss://testnet.vara.network",
+        });
+        setGearApi(api);
+        console.log("Connected to Vara testnet");
+      } catch (error) {
+        console.error("Failed to connect to Gear API:", error);
+      }
+    };
+
+    
+    connectToGearApi();
+  }, []);
+  
+  const readStates = async () => {
+    // Load the program
+    const infoQuest = new Program(gearApi, INFO_QUEST_ID);
+    const res = await infoQuest.infoQuestSvc.getAllQuests();
+    console.log("Queries:", res);
+  };
 
   const handleClick = (title) => {
     setSelectedQuest(title);
     console.log(`Selected quest: ${title}`);
+    readStates();
   };
 
   return (
@@ -81,7 +113,11 @@ export default function Management() {
       </div>
       {/* The information quest form */}
       <div>
-        {selectedQuest ? <QuestDetails title={selectedQuest} />: <p>Select a quest to view details</p>}
+        {selectedQuest ? (
+          <QuestDetails title={selectedQuest} />
+        ) : (
+          <p>Select a quest to view details</p>
+        )}
       </div>
     </div>
   );
