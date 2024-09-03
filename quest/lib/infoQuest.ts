@@ -38,6 +38,13 @@ export interface Submissions {
 
 export type QuestStatus = "open" | "completed" | "closed";
 
+export interface CompactQuestInfo {
+  title: string;
+  description: string;
+  deadline: number;
+  quest_status: QuestStatus;
+}
+
 export class Program {
   public readonly registry: TypeRegistry;
   public readonly infoQuestSvc: InfoQuestSvc;
@@ -51,6 +58,7 @@ export class Program {
       InformationQuest: {"login_method":"LoginMethod","publisher_id":"[u8;32]","deadline":"u32","title":"String","description":"String","submission_requirements":"String","submission_type":"SubmissionType","reward_amount":"u128","submissions":"Submissions","quest_status":"QuestStatus"},
       Submissions: {"map":"BTreeMap<[u8;32], String>","status":"BTreeMap<[u8;32], SubmissionStatus>"},
       QuestStatus: {"_enum":["Open","Completed","Closed"]},
+      CompactQuestInfo: {"title":"String","description":"String","deadline":"u32","quest_status":"QuestStatus"},
     }
 
     this.registry = new TypeRegistry();
@@ -161,6 +169,21 @@ export class InfoQuestSvc {
     return result[2].toJSON() as unknown as Record<string, InformationQuest> | null;
   }
 
+  public async getCompactQuestsInfo(originAddress?: string, value?: number | string | bigint, atBlock?: `0x${string}`): Promise<Array<CompactQuestInfo> | null> {
+    const payload = this._program.registry.createType('(String, String)', ['InfoQuestSvc', 'GetCompactQuestsInfo']).toHex();
+    const reply = await this._program.api.message.calculateReply({
+      destination: this._program.programId,
+      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
+      payload,
+      value: value || 0,
+      gasLimit: this._program.api.blockGasLimit.toBigInt(),
+      at: atBlock || null,
+    });
+    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
+    const result = this._program.registry.createType('(String, String, Option<Vec<CompactQuestInfo>>)', reply.payload);
+    return result[2].toJSON() as unknown as Array<CompactQuestInfo> | null;
+  }
+
   public async getQuest(title: string, originAddress?: string, value?: number | string | bigint, atBlock?: `0x${string}`): Promise<InformationQuest | null> {
     const payload = this._program.registry.createType('(String, String, String)', ['InfoQuestSvc', 'GetQuest', title]).toHex();
     const reply = await this._program.api.message.calculateReply({
@@ -174,6 +197,21 @@ export class InfoQuestSvc {
     if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
     const result = this._program.registry.createType('(String, String, Option<InformationQuest>)', reply.payload);
     return result[2].toJSON() as unknown as InformationQuest | null;
+  }
+
+  public async getSubmissions(title: string, originAddress?: string, value?: number | string | bigint, atBlock?: `0x${string}`): Promise<Submissions | null> {
+    const payload = this._program.registry.createType('(String, String, String)', ['InfoQuestSvc', 'GetSubmissions', title]).toHex();
+    const reply = await this._program.api.message.calculateReply({
+      destination: this._program.programId,
+      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
+      payload,
+      value: value || 0,
+      gasLimit: this._program.api.blockGasLimit.toBigInt(),
+      at: atBlock || null,
+    });
+    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
+    const result = this._program.registry.createType('(String, String, Option<Submissions>)', reply.payload);
+    return result[2].toJSON() as unknown as Submissions | null;
   }
 
   public subscribeToPublishedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {

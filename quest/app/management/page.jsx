@@ -24,65 +24,38 @@ const data = {
   decision: "Pending...",
 };
 
-const questInfo = [
-  {
-    title: "Quest Title",
-    deadline: "2022-12-31",
-    status: "Open",
-    description: "Description",
-    logo: "questLogo.svg",
-    publisher: "Publisher",
-    submissionType: "Submission Type",
-    requirements: "Requirements",
-  },
-  {
-    title: "Quest Title 2",
-    deadline: "2022-12-31",
-    status: "Open",
-    description: "Description",
-    logo: "questLogo.svg",
-    publisher: "Publisher",
-    submissionType: "Submission Type",
-    requirements: "Requirements",
-  },
-];
-
 const INFO_QUEST_ID =
-  "0xc28c32a6f0cc06befec060f74231b78b7e929ac72e082e1b2a9c91ab70b50306";
+  "0x05e823722bb816108771a3870a2c6de996be28c9193775733a310a6b4903cc3b";
 
 export default function Management() {
   const [selectedQuest, setSelectedQuest] = useState(null);
   const [gearApi, setGearApi] = useState(null);
+  const [compactQuests, setCompactQuests] = useState([]);
 
   useEffect(() => {
+    // Initialize the Gear API
     const connectToGearApi = async () => {
       try {
-        // Initialize the Gear API
         const api = await GearApi.create({
           providerAddress: "wss://testnet.vara.network",
         });
         setGearApi(api);
+        // Load the program.
+        const infoQuest = new Program(api, INFO_QUEST_ID);
+        const res = await infoQuest.infoQuestSvc.getCompactQuestsInfo();
         console.log("Connected to Vara testnet");
+        setCompactQuests(res);
       } catch (error) {
         console.error("Failed to connect to Gear API:", error);
       }
     };
 
-    
     connectToGearApi();
   }, []);
-  
-  const readStates = async () => {
-    // Load the program
-    const infoQuest = new Program(gearApi, INFO_QUEST_ID);
-    const res = await infoQuest.infoQuestSvc.getAllQuests();
-    console.log("Queries:", res);
-  };
 
   const handleClick = (title) => {
     setSelectedQuest(title);
     console.log(`Selected quest: ${title}`);
-    readStates();
   };
 
   return (
@@ -97,7 +70,7 @@ export default function Management() {
         </div>
         {/* Show succint information about published quests. */}
         <ul className="flex flex-col p-4 gap-y-2">
-          {questInfo.map((quest) => (
+          {compactQuests.length !== 0 ? (compactQuests.map((quest) => (
             <li onClick={() => handleClick(quest.title)}>
               <CompactQuestCard
                 key={quest.title}
@@ -105,16 +78,16 @@ export default function Management() {
                 deadline={quest.deadline}
                 status={quest.status}
                 description={quest.description}
-                logo={quest.logo}
+                logo="questLogo.svg"
               />
             </li>
-          ))}
+          ))): <p>Loading...</p>}
         </ul>
       </div>
       {/* The information quest form */}
       <div>
         {selectedQuest ? (
-          <QuestDetails title={selectedQuest} />
+          <QuestDetails gearApi={gearApi} title={selectedQuest} infoQuestId={INFO_QUEST_ID} />
         ) : (
           <p>Select a quest to view details</p>
         )}

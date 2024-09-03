@@ -50,6 +50,13 @@ type QuestStatus = enum {
   Closed,
 };
 
+type CompactQuestInfo = struct {
+  title: str,
+  description: str,
+  deadline: u32,
+  quest_status: QuestStatus,
+};
+
 constructor {
   New : ();
 };
@@ -60,7 +67,9 @@ service InfoQuestSvc {
   Publish : (quest_details: UserInput) -> null;
   Submit : (submission: str, title: str) -> null;
   query GetAllQuests : () -> opt map (str, InformationQuest);
+  query GetCompactQuestsInfo : () -> opt vec CompactQuestInfo;
   query GetQuest : (title: str) -> opt InformationQuest;
+  query GetSubmissions : (title: str) -> opt Submissions;
 
   events {
     Published;

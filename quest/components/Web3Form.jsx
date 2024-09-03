@@ -35,7 +35,7 @@ const submissionOptions = [
 ];
 
 const INFO_QUEST_ID =
-  "0xc28c32a6f0cc06befec060f74231b78b7e929ac72e082e1b2a9c91ab70b50306";
+  "0x05e823722bb816108771a3870a2c6de996be28c9193775733a310a6b4903cc3b";
 
 const Web3Form = () => {
   const [gearApi, setGearApi] = useState(null);

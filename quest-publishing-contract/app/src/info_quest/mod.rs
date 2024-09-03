@@ -28,6 +28,16 @@ pub struct InformationQuest {
 #[derive(Encode, Decode, TypeInfo, Default, Clone)]
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
+pub struct CompactQuestInfo {
+    pub title: String,
+    pub description: String,
+    pub deadline: u32,
+    pub quest_status: QuestStatus,
+}
+
+#[derive(Encode, Decode, TypeInfo, Default, Clone)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum LoginMethod {
     #[default]
     Web3,
@@ -386,6 +396,26 @@ impl<'a> InfoQuestService<'a> {
 
     pub fn get_all_quests(&self) -> Option<BTreeMap<String, InformationQuest>> {
         Some(self.data.borrow().info_quest_map.clone())
+    }
+
+    pub fn get_compact_quests_info(&self) -> Option<Vec<CompactQuestInfo>> {
+        let mut compact_quests_info = Vec::new();
+        for (title, info_quest) in self.data.borrow().info_quest_map.iter() {
+            compact_quests_info.push(CompactQuestInfo {
+                title: title.clone(),
+                description: info_quest.description.clone(),
+                deadline: info_quest.deadline,
+                quest_status: info_quest.quest_status.clone(),
+            });
+        }
+        Some(compact_quests_info)
+    }
+
+    pub fn get_submissions(&self, title: String) -> Option<Submissions> {
+        if let Some(info_quest) = self.data.borrow().info_quest_map.get(&title) {
+            return Some(info_quest.submissions.clone());
+        }
+        None
     }
 
     // Helper functions
