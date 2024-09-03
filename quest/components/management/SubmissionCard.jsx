@@ -24,9 +24,6 @@ const SubmissionCard = ({ participant, link, decision }) => {
               <span className="text-custom-gray">Decision: </span>
               {decision}
             </p>
-            <button className="rounded-full text-custom-primary text-sm bg-custom-accent px-4 py-1">
-              Decide
-            </button>
           </div>
         </div>
       </div>

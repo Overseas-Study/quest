@@ -1,6 +1,4 @@
 ### Todos
-- management portal UI✅
-- publish quest using new idl✅
-- auto redirect to management portal after publishing✅
-- read data from contract✅
-- using live data to update management portal
+- Add submit functionality to quest management portal.✅
+- Add decide functionality to quest management portal.✅
+- Add close functionality to quest management portal.✅

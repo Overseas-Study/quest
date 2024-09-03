@@ -70,24 +70,32 @@ export default function Management() {
         </div>
         {/* Show succint information about published quests. */}
         <ul className="flex flex-col p-4 gap-y-2">
-          {compactQuests.length !== 0 ? (compactQuests.map((quest) => (
-            <li onClick={() => handleClick(quest.title)}>
-              <CompactQuestCard
-                key={quest.title}
-                title={quest.title}
-                deadline={quest.deadline}
-                status={quest.status}
-                description={quest.description}
-                logo="questLogo.svg"
-              />
-            </li>
-          ))): <p>Loading...</p>}
+          {compactQuests.length !== 0 ? (
+            compactQuests.map((quest) => (
+              <li onClick={() => handleClick(quest.title)}>
+                <CompactQuestCard
+                  key={quest.title}
+                  title={quest.title}
+                  deadline={quest.deadline}
+                  status={quest.status}
+                  description={quest.description}
+                  logo="questLogo.svg"
+                />
+              </li>
+            ))
+          ) : (
+            <p>Loading...</p>
+          )}
         </ul>
       </div>
       {/* The information quest form */}
       <div>
         {selectedQuest ? (
-          <QuestDetails gearApi={gearApi} title={selectedQuest} infoQuestId={INFO_QUEST_ID} />
+          <QuestDetails
+            gearApi={gearApi}
+            title={selectedQuest}
+            infoQuestId={INFO_QUEST_ID}
+          />
         ) : (
           <p>Select a quest to view details</p>
         )}
