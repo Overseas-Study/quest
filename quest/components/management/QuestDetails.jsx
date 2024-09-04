@@ -133,16 +133,25 @@ const QuestDetails = ({ gearApi, title, infoQuestId }) => {
   return (
     <div className="flex flex-col">
       <div>
-        <h2>Gear Wallet Connection</h2>
-        {!connected ? (
-          <button onClick={connectWallet}>Connect Wallet</button>
-        ) : (
+        {!connected && (
           <div>
-            <p>Connected Account: {selectedAccount?.address}</p>
-            <select onChange={handleAccountChange}>
+            <button
+              onClick={connectWallet}
+              className="border border-solid w-full px-4 py-1 mb-2 bg-custom-accent text-custom-primary rounded-full"
+            >
+              Connect Wallet to Interact With Quest
+            </button>
+          </div>
+        )}
+        {connected && (
+          <div>
+            <select
+              className="max-w-lg rounded-full px-4 py-1 mb-2 bg-custom-secondary text-custom-primary"
+              onChange={handleAccountChange}
+            >
               {accounts.map((account) => (
                 <option key={account.address} value={account.address}>
-                  {account.meta.name || "Unnamed Account"} ({account.address})
+                  {account.meta.name || "Unnamed Account"}: {account.address}
                 </option>
               ))}
             </select>

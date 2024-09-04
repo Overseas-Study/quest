@@ -14,7 +14,9 @@ export default function Page() {
     <div className="flex">
       {/* The left-side pannel on the information quest page */}
       <div className="flex flex-col items-center mr-12">
-        <p className="text-custom-primary text-4xl mb-4"><span className="text-custom-accent">Information</span> QUEST</p>
+        <p className="text-custom-primary text-4xl mb-4">
+          <span className="text-custom-accent">Information</span> QUEST
+        </p>
         <CallToAction />
         <div className="flex flex-col gap-y-4 mt-16">
           <ExampleQuest
@@ -40,7 +42,9 @@ export default function Page() {
         </div>
       </div>
       {/* The information quest form */}
-      <Web3Form />
+      <div>
+        <Web3Form />
+      </div>
     </div>
   );
 }

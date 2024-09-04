@@ -7,23 +7,6 @@ import { GearApi } from "@gear-js/api";
 import { useState, useEffect } from "react";
 import { Program } from "@/lib/infoQuest";
 
-const data = {
-  status: "Open",
-  rewardAmount: 100,
-  title: "Quest Title",
-  deadline: "2022-12-31",
-  publisher: "Publisher",
-  description: "Description",
-  submissionType: "Submission Type",
-  requirements: "Requirements",
-  submissionTotal: 25,
-  decided: 4,
-  logo: "questLogo.svg",
-  participant: "Participant",
-  link: "#",
-  decision: "Pending...",
-};
-
 const INFO_QUEST_ID =
   "0x05e823722bb816108771a3870a2c6de996be28c9193775733a310a6b4903cc3b";
 
@@ -64,8 +47,8 @@ export default function Management() {
       <div className="flex flex-col items-center mr-12 divide-y divide-solid">
         <div className="w-full mb-4">
           <StatisticDisplay
-            submissionTotal={data.submissionTotal}
-            decided={data.decided}
+            submissionTotal={25}
+            decided={4}
           />
         </div>
         {/* Show succint information about published quests. */}
@@ -77,7 +60,7 @@ export default function Management() {
                   key={quest.title}
                   title={quest.title}
                   deadline={quest.deadline}
-                  status={quest.status}
+                  status={quest.quest_status}
                   description={quest.description}
                   logo="questLogo.svg"
                 />
@@ -90,14 +73,12 @@ export default function Management() {
       </div>
       {/* The information quest form */}
       <div>
-        {selectedQuest ? (
+        {selectedQuest && (
           <QuestDetails
             gearApi={gearApi}
             title={selectedQuest}
             infoQuestId={INFO_QUEST_ID}
           />
-        ) : (
-          <p>Select a quest to view details</p>
         )}
       </div>
     </div>

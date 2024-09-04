@@ -42,7 +42,7 @@ const Web3Form = () => {
   const [accounts, setAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [connected, setConnected] = useState(false);
-  const [loginMethod, setLoginMethod] = useState("");
+  const [loginMethod, setLoginMethod] = useState("web3");
   const [formData, setFormData] = useState({
     loginMethod: "",
     deadline: 0,
@@ -100,7 +100,7 @@ const Web3Form = () => {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    
+
     const data = new FormData(e.target);
 
     // Change the deadline to block height.
@@ -110,7 +110,7 @@ const Web3Form = () => {
     const diffMilli = parsedDeadline - now;
     const diffSeconds = Math.floor(diffMilli / 1000);
     const deadlineBlock = Math.floor(diffSeconds / 3);
-    
+
     const submissionData = {
       login_method: formData.loginMethod,
       deadline: deadlineBlock,
@@ -122,9 +122,9 @@ const Web3Form = () => {
     };
     console.log(submissionData);
     setFormData(submissionData);
-    
+
     const infoQuest = new Program(gearApi, INFO_QUEST_ID);
-    const transaction = infoQuest.infoQuestSvc.publish({...submissionData});
+    const transaction = infoQuest.infoQuestSvc.publish({ ...submissionData });
     const injector = await web3FromSource(selectedAccount.meta.source);
     transaction.withAccount(selectedAccount.address, {
       signer: injector.signer,
@@ -136,31 +136,46 @@ const Web3Form = () => {
 
     await response();
     router.push("/management");
-  };
+  }
 
   return (
     <div className="flex flex-col w-full">
       <div>
-        <h2>Gear Wallet Connection</h2>
-        {!connected && loginMethod == "web3" ? (
-          <button onClick={connectWallet}>Connect Wallet</button>
-        ) : (
+        {!connected && loginMethod == "web3" && (
           <div>
-            <p>Connected Account: {selectedAccount?.address}</p>
-            <select onChange={handleAccountChange}>
+            <button
+              onClick={connectWallet}
+              className="border border-solid w-full px-4 py-1 mb-2 bg-custom-accent text-custom-primary rounded-full"
+            >
+              Connect Wallet
+            </button>
+          </div>
+        )}
+        {connected && (
+          <div>
+            <select className="max-w-lg rounded-full px-4 py-1 mb-2 bg-custom-secondary text-custom-primary" onChange={handleAccountChange}>
               {accounts.map((account) => (
                 <option key={account.address} value={account.address}>
-                  {account.meta.name || "Unnamed Account"} ({account.address})
+                  {account.meta.name || "Unnamed Account"}: {account.address}
                 </option>
               ))}
             </select>
+          </div>
+        )}
+        {loginMethod == "email" && (
+          <div>
+            <input
+              type="email"
+              placeholder="Input your email to publish quest"
+              className="w-full mb-2 border border-solid border-custom-accent px-4 py-1 rounded-full text-custom-primary bg-custom-secondary"
+            ></input>
           </div>
         )}
       </div>
       {/* Form */}
       <form
         onSubmit={handleSubmit}
-        className="border border-custom-primary shadow-sm ring-1 ring-gray-900/5 w-1/2 sm:rounded-xl md:col-span-2"
+        className="border border-custom-primary shadow-sm ring-1 ring-gray-900/5 max-w-lg sm:rounded-xl md:col-span-2"
       >
         <div className="px-4 py-6 sm:p-8">
           <div className="grid max-w-2xl grid-cols-2 gap-x-6 gap-y-8">
@@ -170,7 +185,7 @@ const Web3Form = () => {
                   htmlFor="login-method"
                   className="text-sm font-medium leading-6 text-custom-primary"
                 >
-                  Select Your Login Method
+                  Select Publication Method
                 </label>
                 <div className="mt-2" id="login-method">
                   <DropDownSelection
@@ -208,12 +223,12 @@ const Web3Form = () => {
                 Quest Title
               </label>
               <div className="mt-2">
-                <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-custom-primary focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600">
+                <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-custom-primary focus-within:ring-2 focus-within:ring-inset focus-within:ring-custom-accent">
                   <input
                     id="quest-title"
                     name="quest-title"
                     type="text"
-                    className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-custom-gray placeholder:text-custom-gray focus:ring-0 sm:text-sm sm:leading-6"
+                    className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-custom-accent placeholder:text-custom-gray focus:ring-0 sm:text-sm sm:leading-6"
                   />
                 </div>
               </div>
@@ -231,7 +246,7 @@ const Web3Form = () => {
                   id="quest-description"
                   name="quest-description"
                   rows={3}
-                  className="block w-full rounded-md border-0 bg-transparent py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-custom-primary placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 bg-transparent py-1.5 text-custom-accent shadow-sm ring-1 ring-inset ring-custom-primary placeholder:text-custom-gray focus:ring-2 focus:ring-inset focus:ring-custom-accent sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -247,7 +262,7 @@ const Web3Form = () => {
                   id="submission-requirements"
                   name="submission-requirements"
                   rows={5}
-                  className="block w-full rounded-md border-0 bg-transparent py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-custom-primary placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 bg-transparent py-1.5 text-custom-accent shadow-sm ring-1 ring-inset ring-custom-primary placeholder:text-custom-gray focus:ring-2 focus:ring-inset focus:ring-custom-accent sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -278,11 +293,11 @@ const Web3Form = () => {
                   htmlFor="reward"
                   className="text-sm font-medium leading-6 text-custom-primary"
                 >
-                  Reward in USDT
+                  Reward in TVARA
                 </label>
                 <input
                   type="number"
-                  className="rounded-lg"
+                  className="rounded-lg focus:ring-0 focus:ring-custom-accent"
                   id="reward"
                   name="reward"
                 />

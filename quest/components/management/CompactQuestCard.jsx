@@ -15,9 +15,9 @@ const CompactQuestCard = ({ title, deadline, status, description, logo }) => {
           </p>
         </div>
       </div>
-      <div className="grid justify-items-center">
+      <div className="grid ol-span-1 justify-items-center">
         <img
-          className="col-span-1 rounded-lg"
+          className="crounded-lg"
           width={139}
           height={167}
           src={`/${logo}`}
