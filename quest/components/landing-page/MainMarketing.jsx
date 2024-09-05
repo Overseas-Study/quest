@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const MainMarketing = () => {
   return (
-    <div className="flex flex-col max-w-96 gap-y-6">
+    <div className="flex flex-col max-w-96 gap-y-6 font-playfair">
       <div>
         <p className="text-custom-primary text-2xl">Start web3</p>
         <p className="text-custom-primary text-4xl">

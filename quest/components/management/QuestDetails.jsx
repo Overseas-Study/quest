@@ -158,7 +158,7 @@ const QuestDetails = ({ gearApi, title, infoQuestId }) => {
           </div>
         )}
       </div>
-      <div className="flex">
+      <div className="flex gap-x-1">
         {fullQuestDetails ? (
           <div>
             <FullQuestCard
@@ -172,12 +172,30 @@ const QuestDetails = ({ gearApi, title, infoQuestId }) => {
               requirements={fullQuestDetails.submission_requirements}
             />
 
-            <form onSubmit={handleSubmit}>
-              <input type="text" name="submission"></input>
-              <button type="submit">Submit</button>
-            </form>
+            <button
+              onClick={() => handleClose(title)}
+              className="w-full mt-1 rounded-b-lg bg-custom-primary text-custom-gray text-base"
+            >
+              Close Quest
+            </button>
 
-            <button onClick={() => handleClose(title)}>Close Quest</button>
+            <form
+              onSubmit={handleSubmit}
+              className="flex justify-end mt-2 w-full gap-x-2"
+            >
+              <input
+                type="text"
+                name="submission"
+                placeholder="Type your submission here..."
+                className="w-full rounded-full px-4 py-1 bg-transparent border border-solid border-custom-accent text-custom-primary placeholder:text-custom-gray"
+              ></input>
+              <button
+                type="submit"
+                className="text-lg font-bold text-custom-accent"
+              >
+                Submit
+              </button>
+            </form>
           </div>
         ) : (
           <p>Loading...</p>
@@ -191,18 +209,20 @@ const QuestDetails = ({ gearApi, title, infoQuestId }) => {
                   link={parsedSubmission.submission}
                   decision={parsedSubmission.status}
                 />
-                <button
-                  onClick={() => handleApprove(parsedSubmission.participant)}
-                  className="rounded-full text-custom-primary text-sm bg-custom-accent px-4 py-1"
-                >
-                  Approve
-                </button>
-                <button
-                  onClick={() => handleReject(parsedSubmission.participant)}
-                  className="rounded-full text-custom-primary text-sm bg-custom-accent px-4 py-1"
-                >
-                  Reject
-                </button>
+                <div className="flex justify-end gap-x-2 mt-2">
+                  <button
+                    onClick={() => handleApprove(parsedSubmission.participant)}
+                    className="rounded-full text-custom-primary text-sm bg-custom-accent px-4 py-1"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => handleReject(parsedSubmission.participant)}
+                    className="rounded-full text-custom-primary text-sm bg-transparent border border-solid border-custom-accent px-4 py-1"
+                  >
+                    Reject
+                  </button>
+                </div>
               </li>
             ))
           ) : (

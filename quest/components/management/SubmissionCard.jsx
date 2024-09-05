@@ -9,7 +9,7 @@ const SubmissionCard = ({ participant, link, decision }) => {
       </div>
       <div className="col-span-3">
         <div className="flex flex-col">
-          <p className="text-sm text-custom-secondary">
+          <p className="text-sm text-custom-secondary truncate">
             <span className="text-custom-gray">Participant: </span>
             {participant}
           </p>

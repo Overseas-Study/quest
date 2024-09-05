@@ -8,8 +8,8 @@
 - Management page: compact quest card style✅
 - Management page: wallet display style✅
 - Management page: full quest card style✅
-- Management page: participant submission style
-- Management page: close quest button style
-- Management page: submission style
-- Management page: decision button style
-- Overall fonts
+- Management page: participant submission style✅
+- Management page: submission style✅
+- Management page: decision button style✅
+- Management page: close quest button style✅
+- Overall fonts✅
