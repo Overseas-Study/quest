@@ -129,7 +129,7 @@ const Web3Form = () => {
     transaction.withAccount(selectedAccount.address, {
       signer: injector.signer,
     });
-    transaction.withValue(submissionData.reward_amount);
+    transaction.withValue(submissionData.reward_amount * 1000000000000);
 
     await transaction.calculateGas();
     const { msgId, blockHash, response } = await transaction.signAndSend();

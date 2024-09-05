@@ -1,15 +1,6 @@
 ### Todos
-- Landing page: publish quest link✅
-- Info quest page: left-side pannel width✅
-- Info quest page: wallet display style✅
-- Info quest page: dropdown selection color✅
-- Info quest page: text box focus color✅
-- Info quest page: text box text color✅
-- Management page: compact quest card style✅
-- Management page: wallet display style✅
-- Management page: full quest card style✅
-- Management page: participant submission style✅
-- Management page: submission style✅
-- Management page: decision button style✅
-- Management page: close quest button style✅
-- Overall fonts✅
+- Core workflow final test: quest owner can publish quests with rewards.✅
+- Core workflow final test: participant can submit to quest.✅
+- Core workflow final test: quest owner can decide on submissions.✅
+- Core workflow final test: automatic reward distribution on approve.✅
+- Core workflow final test: quest owner can close his own quest.✅
