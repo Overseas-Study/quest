@@ -84,6 +84,8 @@ const QuestDetails = ({ gearApi, title, infoQuestId }) => {
     const { msgId, blockHash, response } = await transaction.signAndSend();
 
     await response();
+    // A very naive way to refresh the page.
+    window.location.reload();
   };
 
   const handleApprove = async (participant) => {
@@ -100,6 +102,8 @@ const QuestDetails = ({ gearApi, title, infoQuestId }) => {
     const { msgId, blockHash, response } = await transaction.signAndSend();
 
     await response();
+    // A very naive way to refresh the page.
+    window.location.reload();
   };
 
   const handleReject = async (participant) => {
@@ -116,6 +120,8 @@ const QuestDetails = ({ gearApi, title, infoQuestId }) => {
     const { msgId, blockHash, response } = await transaction.signAndSend();
 
     await response();
+    // A very naive way to refresh the page.
+    window.location.reload();
   };
 
   const handleClose = async (title) => {
@@ -128,6 +134,8 @@ const QuestDetails = ({ gearApi, title, infoQuestId }) => {
     const { msgId, blockHash, response } = await transaction.signAndSend();
 
     await response();
+    // A very naive way to refresh the page.
+    window.location.reload();
   };
 
   return (
@@ -226,7 +234,7 @@ const QuestDetails = ({ gearApi, title, infoQuestId }) => {
               </li>
             ))
           ) : (
-            <p>No submissions yet.</p>
+            <div className="border border-dashed border-custom-primary text-custom-primary p-2 bg-transparent text-base">No submissions yet.</div>
           )}
         </ul>
       </div>

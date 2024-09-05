@@ -35,7 +35,7 @@ const submissionOptions = [
 ];
 
 const INFO_QUEST_ID =
-  "0x05e823722bb816108771a3870a2c6de996be28c9193775733a310a6b4903cc3b";
+  "0x726db3a23fc98b838572bfcc641776dd9f510071f400d77fac526266c0fcdca7";
 
 const Web3Form = () => {
   const [gearApi, setGearApi] = useState(null);
@@ -309,6 +309,8 @@ const Web3Form = () => {
           <button
             type="button"
             className="text-sm font-semibold leading-6 text-custom-primary"
+            // A very very naive reset implementation.
+            onClick={() => {window.location.reload()}}
           >
             Reset
           </button>

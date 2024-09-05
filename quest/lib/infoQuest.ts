@@ -43,6 +43,8 @@ export interface CompactQuestInfo {
   description: string;
   deadline: number;
   quest_status: QuestStatus;
+  submission_count: number;
+  decision_count: number;
 }
 
 export class Program {
@@ -58,7 +60,7 @@ export class Program {
       InformationQuest: {"login_method":"LoginMethod","publisher_id":"[u8;32]","deadline":"u32","title":"String","description":"String","submission_requirements":"String","submission_type":"SubmissionType","reward_amount":"u128","submissions":"Submissions","quest_status":"QuestStatus"},
       Submissions: {"map":"BTreeMap<[u8;32], String>","status":"BTreeMap<[u8;32], SubmissionStatus>"},
       QuestStatus: {"_enum":["Open","Completed","Closed"]},
-      CompactQuestInfo: {"title":"String","description":"String","deadline":"u32","quest_status":"QuestStatus"},
+      CompactQuestInfo: {"title":"String","description":"String","deadline":"u32","quest_status":"QuestStatus","submission_count":"u32","decision_count":"u32"},
     }
 
     this.registry = new TypeRegistry();

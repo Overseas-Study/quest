@@ -9,7 +9,7 @@ const MainMarketing = () => {
           Through <span className="text-custom-accent">QUEST</span>
         </p>
       </div>
-      <Link href="/info-quest">
+      <Link href="/info-quest" className="transform transition-transform duration-300 hover:scale-105 hover:-translate-x-1 hover:-translate-y-1">
         <button className="bg-custom-primary text-custom-black border border-solid rounded-full px-12 py-1">
           Publish Quest
         </button>

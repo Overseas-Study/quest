@@ -8,12 +8,14 @@ import { useState, useEffect } from "react";
 import { Program } from "@/lib/infoQuest";
 
 const INFO_QUEST_ID =
-  "0x05e823722bb816108771a3870a2c6de996be28c9193775733a310a6b4903cc3b";
+  "0x726db3a23fc98b838572bfcc641776dd9f510071f400d77fac526266c0fcdca7";
 
 export default function Management() {
   const [selectedQuest, setSelectedQuest] = useState(null);
   const [gearApi, setGearApi] = useState(null);
   const [compactQuests, setCompactQuests] = useState([]);
+  const [totalSubmission, setTotalSubmission] = useState(0);
+  const [decidedCount, setDecidedCount] = useState(0);
 
   useEffect(() => {
     // Initialize the Gear API
@@ -27,6 +29,15 @@ export default function Management() {
         const infoQuest = new Program(api, INFO_QUEST_ID);
         const res = await infoQuest.infoQuestSvc.getCompactQuestsInfo();
         console.log("Connected to Vara testnet");
+        // Calculate total submission count and decided count.
+        let total = 0;
+        let decided = 0;
+        for (const quest of res) {
+          total += quest.submission_count;
+          decided += quest.decision_count;
+        }
+        setTotalSubmission(total);
+        setDecidedCount(decided);
         setCompactQuests(res);
       } catch (error) {
         console.error("Failed to connect to Gear API:", error);
@@ -44,11 +55,11 @@ export default function Management() {
   return (
     <div className="flex">
       {/* The left-side pannel on the information quest page */}
-      <div className="flex flex-col items-center mr-12 divide-y divide-solid">
+      <div className="flex flex-col items-center mr-12 divide-y divide-solid w-1/3">
         <div className="w-full mb-4">
           <StatisticDisplay
-            submissionTotal={25}
-            decided={4}
+            submissionTotal={totalSubmission}
+            decided={decidedCount}
           />
         </div>
         {/* Show succint information about published quests. */}
@@ -72,7 +83,7 @@ export default function Management() {
         </ul>
       </div>
       {/* The information quest form */}
-      <div>
+      <div className="w-2/3">
         {selectedQuest && (
           <QuestDetails
             gearApi={gearApi}

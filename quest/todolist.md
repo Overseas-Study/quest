@@ -1,6 +1,11 @@
-### Todos
-- Core workflow final test: quest owner can publish quests with rewards.✅
-- Core workflow final test: participant can submit to quest.✅
-- Core workflow final test: quest owner can decide on submissions.✅
-- Core workflow final test: automatic reward distribution on approve.✅
-- Core workflow final test: quest owner can close his own quest.✅
+### Todos to fix minor issues.
+- Font is still not displayed correctly.
+- Landing page: microinteraction for the "publish quest" button.✅
+- Quest publishing page: the two dropdown selectors' states are conflicting with each other.✅
+- Quest publishing page: change microinteraction for the "publish quest" button.✅
+- Quest publishing page: add real functionalities for the "reset" button.✅
+- Quest management page: calculate real data for the data display section.✅
+- Quest management page: the left-side pannel should be fixed-sized.✅
+- Compact quest card: add more space between quest status and quest logo.✅
+- Quest details: add page revalidation functionality to the submit, approve, and reject buttons.✅
+- Submission card: the "no submission" display needs to have some style.✅

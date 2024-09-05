@@ -55,7 +55,7 @@ service InfoQuestSvc {
 `;
 
 const INFO_QUEST_ID =
-  "0xc3235a6ec2e26f5875c95d2a85eb34dc9506638c305adeb980daca04ba8b2da3";
+  "0x726db3a23fc98b838572bfcc641776dd9f510071f400d77fac526266c0fcdca7";
 
 export const init_info_quest = async (gearApi, programId) => {
   return new Program(gearApi, programId);

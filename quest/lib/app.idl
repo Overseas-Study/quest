@@ -55,6 +55,8 @@ type CompactQuestInfo = struct {
   description: str,
   deadline: u32,
   quest_status: QuestStatus,
+  submission_count: u32,
+  decision_count: u32,
 };
 
 constructor {

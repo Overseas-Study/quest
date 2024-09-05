@@ -33,6 +33,8 @@ pub struct CompactQuestInfo {
     pub description: String,
     pub deadline: u32,
     pub quest_status: QuestStatus,
+    pub submission_count: u32,
+    pub decision_count: u32,
 }
 
 #[derive(Encode, Decode, TypeInfo, Default, Clone)]
@@ -406,6 +408,13 @@ impl<'a> InfoQuestService<'a> {
                 description: info_quest.description.clone(),
                 deadline: info_quest.deadline,
                 quest_status: info_quest.quest_status.clone(),
+                submission_count: info_quest.submissions.map.len() as u32,
+                decision_count: info_quest
+                    .submissions
+                    .status
+                    .values()
+                    .filter(|&status| *status != SubmissionStatus::Submitted)
+                    .count() as u32,
             });
         }
         Some(compact_quests_info)
