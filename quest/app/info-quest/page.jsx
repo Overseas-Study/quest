@@ -1,6 +1,6 @@
-import CallToAction from "@/components/info-quest/CallToAction";
-import ExampleQuest from "@/components/info-quest/ExampleQuest";
-import Web3Form from "@/components/Web3Form";
+import CallToAction from "../../components/info-quest/CallToAction";
+import ExampleQuest from "../../components/info-quest/ExampleQuest";
+import Web3Form from "../../components/Web3Form";
 import {
   AcademicCapIcon,
   BuildingStorefrontIcon,

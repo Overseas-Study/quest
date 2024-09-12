@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import FullQuestCard from "./FullQuestCard";
 import SubmissionCard from "./SubmissionCard";
-import { Program } from "@/lib/infoQuest";
+import { Program } from "../../lib/infoQuest";
 import {
   web3Enable,
   web3Accounts,

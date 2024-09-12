@@ -7,8 +7,8 @@ import {
   web3Accounts,
   web3FromSource,
 } from "@polkadot/extension-dapp";
-import DropDownSelection from "@/components/info-quest/DropDownSelection";
-import { Program } from "@/lib/infoQuest";
+import DropDownSelection from "./info-quest/DropDownSelection";
+import { Program } from "../lib/infoQuest";
 import { useRouter } from "next/navigation";
 
 const accountOptions = [

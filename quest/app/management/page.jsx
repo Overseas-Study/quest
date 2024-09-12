@@ -1,11 +1,11 @@
 "use client";
 
-import CompactQuestCard from "@/components/management/CompactQuestCard";
-import QuestDetails from "@/components/management/QuestDetails";
-import StatisticDisplay from "@/components/management/StatisticDisplay";
+import CompactQuestCard from "../../components/management/CompactQuestCard";
+import QuestDetails from "../../components/management/QuestDetails";
+import StatisticDisplay from "../../components/management/StatisticDisplay";
 import { GearApi } from "@gear-js/api";
 import { useState, useEffect } from "react";
-import { Program } from "@/lib/infoQuest";
+import { Program } from "../../lib/infoQuest";
 
 const INFO_QUEST_ID =
   "0x726db3a23fc98b838572bfcc641776dd9f510071f400d77fac526266c0fcdca7";

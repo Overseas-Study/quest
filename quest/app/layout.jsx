@@ -1,5 +1,5 @@
 import { Playfair_Display } from "next/font/google";
-import SideNav from "@/components/SideNav";
+import SideNav from "../components/SideNav";
 import "./globals.css";
 
 const playfair = Playfair_Display({ subsets: ["latin"] });
