@@ -75,6 +75,43 @@ export const POST = async (req: NextRequest) => {
           JSON.stringify({ message: "Submission sent." }),
           { status: 200 }
         );
+      case "decide":
+        // Get quest ID from the URL.
+        const questIdToDecide = req.nextUrl.searchParams.get("questId");
+        // Get participant ID and actual decision from the body.
+        const participantId = body.participantId;
+        const decision = body.decision;
+        // Generate keypair to mock the quest owner.
+        const questOwnerKeyring = new Keyring({ type: "sr25519" });
+        const questOwnerPair = questOwnerKeyring.addFromUri("//Alice");
+
+        const decideTx = quest.infoQuestSvc.decide(
+          participantId,
+          decision,
+          questIdToDecide
+        );
+        decideTx.withAccount(questOwnerPair);
+        await decideTx.calculateGas();
+        await decideTx.signAndSend();
+
+        return new NextResponse(JSON.stringify({ message: "Decision sent." }), {
+          status: 200,
+        });
+      case "close":
+        // Get quest ID from the URL.
+        const questIdToClose = req.nextUrl.searchParams.get("questId");
+        // Generate keypair to mock the quest owner.
+        const questOwner = new Keyring({ type: "sr25519" });
+        const pair = questOwner.addFromUri("//Alice");
+
+        const closeTx = quest.infoQuestSvc.close(questIdToClose);
+        closeTx.withAccount(pair);
+        await closeTx.calculateGas();
+        await closeTx.signAndSend();
+
+        return new NextResponse(JSON.stringify({ message: "Quest closed." }), {
+          status: 200,
+        });
     }
   } catch (err) {
     return new NextResponse(
